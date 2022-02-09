@@ -2,14 +2,43 @@
 {
     public static void Main()
     {
-        Console.Write("Введите n: ");
-        int n = int.Parse(Console.ReadLine());
-        Console.Write("Введите m: ");
-        int m = int.Parse(Console.ReadLine());
+        bool whileActive = true;
+        int n = 1;
+        int m;
+        while (whileActive)
+        {
+            Console.WriteLine("Для скольких чисел считать НОД? (либо 2, либо 3, 0 - для выхода)");
+            int key = int.Parse(Console.ReadLine());
+            switch (key)
+            {
+                case 0: 
+                    whileActive = false; 
+                    break;
+                case 2:
+                    Console.Write("Введите n: ");
+                    n = int.Parse(Console.ReadLine());
+                    Console.Write("Введите m: ");
+                    m = int.Parse(Console.ReadLine());
 
-        Console.WriteLine($"НОД: {Calculations.NOD((uint)m, (uint)n)}");
-        
+                    Console.WriteLine($"НОД двух чисел: {Calculations.NOD((uint)m, (uint)n)}");
+                    break;
+                case 3:
+                    Console.Write("Введите n: ");
+                    n = int.Parse(Console.ReadLine());
+                    Console.Write("Введите m: ");
+                    m = int.Parse(Console.ReadLine());
+                    Console.Write("Введите l: ");
+                    int l = int.Parse(Console.ReadLine());
+                    Console.WriteLine($"НОД трех чисел: {Calculations.NOD((uint)m, (uint)n, (uint)l)}");
+                    break;
+                default:
+                    Console.WriteLine("Введите корректное значение");
+                    break;
+            }
+        }
+
         List<uint> numbers = Calculations.SieveEratosthenes((uint)n);
+        Console.WriteLine($"Все простые числа от 2 до {n}:");
         foreach (uint number in numbers)
         {
             Console.Write(number + " ");
@@ -29,8 +58,9 @@ public class Calculations
         }
 
         uint reminder = 1;
-        uint previousReminder = 1;
         reminder = firstNumber % secondNumber;
+        uint previousReminder = secondNumber;
+
 
         while (reminder != 0)
         {
