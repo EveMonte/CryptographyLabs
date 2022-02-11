@@ -94,7 +94,7 @@ class Encryption : Base
                 textBeforeEncryption.Remove(i + 1, 1).Insert(i + 1, alphabet[0].ToString());
             }
 
-            textPorta += (alphabet.IndexOf(textBeforeEncryption[i + 1]) + alphabet.Length * alphabet.IndexOf(textBeforeEncryption[i])).ToString("D4");
+            textPorta += (alphabet.IndexOf(textBeforeEncryption[i + 1]) + alphabet.Length * alphabet.IndexOf(textBeforeEncryption[i])).ToString("D3");
         }
         textPorta = textPorta.Replace("-", "");
 
@@ -226,9 +226,9 @@ class Euclid
     {
         if (b < a)
         {
-            var t = a;
-            a = b;
-            b = t;
+            a ^= b;
+            b ^= a;
+            a ^= b;
         }
 
         if (a == 0)
@@ -291,13 +291,13 @@ class Decryption : Base
             alphabet = sr.ReadToEnd();
         }
         string newString = "";
-        for (int i = 0; i < textPorta.Length; i += 4)
+        for (int i = 0; i < textPorta.Length; i += 3)
         {
-            if(textPorta.Length - i < 4)
+            if(textPorta.Length - i < 3)
             {
                 break;
             }
-            string tempStr = textPorta.Substring(i, 4);
+            string tempStr = textPorta.Substring(i, 3);
             int tempInt = Convert.ToInt32(tempStr);
             int tempI = 0;
             int tempJ = 0;
