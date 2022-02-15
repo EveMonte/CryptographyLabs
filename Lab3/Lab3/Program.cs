@@ -32,9 +32,10 @@ class Program
         Console.Write("Введите, пожалуйста, вашу фамилию: ");
         secondName = Console.ReadLine();
         secondName = new string(secondName.Distinct().ToArray());
+        
+        decryption.RouteMatrix = encryption.Multiple(name, secondName);
+        decryption.Multiple(name, secondName);
 
-
-        encryption.Multiple(name, secondName);
     }
 }
 
@@ -74,7 +75,7 @@ class Encryption : Cipher
         return routeMatrix;
     }
 
-    public override void Multiple(string name, string secondName)
+    public override char[,] Multiple(string name, string secondName)
     {
         using(StreamReader sr = new StreamReader("input.txt"))
         {
@@ -83,11 +84,19 @@ class Encryption : Cipher
         CreateMatrix(name, secondName);
         SortCols();
         SortRows();
+        return routeMatrix;
     }
 }
 
 class Decryption : Cipher
 {
+
+    public char[,] RouteMatrix
+    {
+        get { return routeMatrix; }
+        set { routeMatrix = value; }
+    }
+
 
     public Decryption(char[,] matrix)
     {
@@ -119,19 +128,49 @@ class Decryption : Cipher
         return null;
     }
 
-    public override void Multiple(string name, string secondName)
+    public override char[,] Multiple(string name, string secondName)
     {
+        SortCols(secondName);
+        SortRows(name);
+        
+        for (int i = 2; i < routeMatrix.GetLength(0); i++)
+        {
+            for (int j = 2; j < routeMatrix.GetLength(1); j++)
+            {
+                decodedText += routeMatrix[i, j];
+            }
+        }
+        using(StreamWriter sw = new StreamWriter("decodedMultiple.txt"))
+        {
+            sw.WriteLine(decodedText);
+        }
 
+        return null;
     }
+
+
 }
 
 abstract class Cipher
 {
     public abstract char[,] Route();
-    public abstract void Multiple(string name, string secondName);
+    public abstract char[,] Multiple(string name, string secondName);
     protected string input = "";
     protected string encodedText = "";
+    protected string decodedText = "";
     protected char[,] routeMatrix;
+
+    protected void PrintMatrix()
+    {
+        for (int i = 0; i < routeMatrix.GetLength(0); i++)
+        {
+            for (int j = 0; j < routeMatrix.GetLength(1); j++)
+            {
+                Console.Write(routeMatrix[i, j] + "\t");
+            }
+            Console.WriteLine();
+        }
+    }
 
     protected void CreateMatrix(string source)
     {
@@ -194,25 +233,23 @@ abstract class Cipher
                 routeMatrix[i, j] = input[counter++];
             }
         }
-
-        for (int i = 0; i < routeMatrix.GetLength(0); i++)
-        {
-            for (int j = 0; j < routeMatrix.GetLength(1); j++)
-            {
-                Console.Write(routeMatrix[i,j] + "\t");
-            }
-            Console.WriteLine();
-        }
+        PrintMatrix();
     }
 
     protected void SortCols()
     {
         char[] temp = new char[routeMatrix.GetLength(0)];
-        int currentOrder;
-        int counter = 0;
+        int currentOrder = 0;
         for(int j = 2; j < routeMatrix.GetLength(1); j++)
         {
-            currentOrder = int.Parse(routeMatrix[1, j].ToString());
+            for (int k = 2; k < routeMatrix.GetLength(1); k++)
+            {
+                if (routeMatrix[1, k] == char.Parse((j - 2).ToString()))
+                {
+                    currentOrder = int.Parse((k - 2).ToString());
+                    break;
+                }
+            }
             if (currentOrder != j - 2) 
             {
                 for (int i = 0; i < routeMatrix.GetLength(0); i++)
@@ -223,26 +260,58 @@ abstract class Cipher
                 } 
             }
         }
-        Console.WriteLine("Отсортированные столбцы:");
-
-        for (int i = 0; i < routeMatrix.GetLength(0); i++)
-        {
-            for (int j = 0; j < routeMatrix.GetLength(1); j++)
-            {
-                Console.Write(routeMatrix[i, j] + "\t");
-            }
-            Console.WriteLine();
-        }
+        Console.WriteLine("\nОтсортированные столбцы:");
+        PrintMatrix();
     }
+
+    protected void SortCols(string columnsKey)
+    {
+        char[] temp = new char[routeMatrix.GetLength(0)];
+        int currentOrder = 0;
+
+        for (int j = 2; j < routeMatrix.GetLength(1); j++)
+        {
+            if (routeMatrix[0, j] != columnsKey[j - 2])
+            {
+                for(int k = 2; k < routeMatrix.GetLength(1); k++)
+                {
+                    if(routeMatrix[0, k] == columnsKey[j - 2])
+                    {
+                        currentOrder = int.Parse(routeMatrix[1, k].ToString());
+                        routeMatrix[1, k] = char.Parse((j - 2).ToString());
+                        routeMatrix[1, j] = char.Parse(currentOrder.ToString());
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < routeMatrix.GetLength(0); i++)
+                {
+                    temp[i] = routeMatrix[i, currentOrder + 2];
+                    routeMatrix[i, currentOrder + 2] = routeMatrix[i, j];
+                    routeMatrix[i, j] = temp[i];
+                }
+            }
+        }
+        Console.WriteLine("\nОтсортированные столбцы (исходное расположение стобцов):");
+        PrintMatrix();
+    }
+
 
     protected void SortRows()
     {
         char[] temp = new char[routeMatrix.GetLength(1)];
-        int currentOrder;
-        int counter = 0;
+        int currentOrder = 0;
         for (int i = 2; i < routeMatrix.GetLength(0); i++)
         {
-            currentOrder = int.Parse(routeMatrix[i, 1].ToString());
+            for (int k = 2; k < routeMatrix.GetLength(1); k++)
+            {
+                if (routeMatrix[k, 1] == char.Parse((i - 2).ToString()))
+                {
+                    currentOrder = int.Parse((k - 2).ToString());
+                    break;
+                }
+            }
+
             if (currentOrder != i - 2)
             {
                 for (int j = 0; j < routeMatrix.GetLength(1); j++)
@@ -254,14 +323,37 @@ abstract class Cipher
             }
         }
         Console.WriteLine("Отсортированные строки:");
-        for (int i = 0; i < routeMatrix.GetLength(0); i++)
-        {
-            for (int j = 0; j < routeMatrix.GetLength(1); j++)
-            {
-                Console.Write(routeMatrix[i, j] + "\t");
-            }
-            Console.WriteLine();
-        }
+        PrintMatrix();
+    }
 
+    protected void SortRows(string rowsKey)
+    {
+        char[] temp = new char[routeMatrix.GetLength(1)];
+        int currentOrder = 0;
+        int counter = 0;
+        for (int i = 2; i < routeMatrix.GetLength(0); i++)
+        {
+            if (routeMatrix[i, 0] != rowsKey[i - 2])
+            {
+                for (int k = 2; k < routeMatrix.GetLength(0); k++)
+                {
+                    if (routeMatrix[k, 0] == rowsKey[i - 2])
+                    {
+                        currentOrder = int.Parse(routeMatrix[k, 1].ToString());
+                        routeMatrix[k, 1] = char.Parse((i - 2).ToString());
+                        routeMatrix[i, 1] = char.Parse(currentOrder.ToString());
+                        break;
+                    }
+                }
+                for (int j = 0; j < routeMatrix.GetLength(1); j++)
+                {
+                    temp[j] = routeMatrix[currentOrder + 2, j];
+                    routeMatrix[currentOrder + 2, j] = routeMatrix[i, j];
+                    routeMatrix[i, j] = temp[j];
+                }
+            }
+        }
+        Console.WriteLine("Отсортированные строки (исходное расположение строк):");
+        PrintMatrix();
     }
 }
