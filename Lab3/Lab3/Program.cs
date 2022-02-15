@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿using Aspose.Cells;
+using Aspose.Cells.Charts;
+using System.Collections;
+using System.Diagnostics;
+
 class Program
 {
     public static void Main()
@@ -17,25 +21,41 @@ class Program
         }
         while (!int.TryParse(Console.ReadLine(), out cols));
 
-        Encryption encryption = new Encryption(rows, cols);        
+        Encryption encryption = new Encryption(rows, cols);
 
+        Stopwatch sw = new Stopwatch();
+        sw.Start(); 
         Decryption decryption = new Decryption(encryption.Route());
+        sw.Stop();
+        Console.WriteLine($"Шифрование маршрутной перестановкой заняло {sw.ElapsedMilliseconds/1000.0f}с");
+        sw.Restart();
         decryption.Route();
+        sw.Stop();
+        Console.WriteLine($"Дешифрование маршрутной перестановкой заняло {sw.ElapsedMilliseconds / 1000.0f}с");
 
         string name;
         string secondName;
 
         Console.Write("Введите, пожалуйста, ваше имя: ");
         name = Console.ReadLine();
-        name = new string(name.Distinct().ToArray());
+        name = new string(name.ToLower().Distinct().ToArray());
 
         Console.Write("Введите, пожалуйста, вашу фамилию: ");
         secondName = Console.ReadLine();
-        secondName = new string(secondName.Distinct().ToArray());
+        secondName = new string(secondName.ToLower().Distinct().ToArray());
         
+        sw.Restart();
         decryption.RouteMatrix = encryption.Multiple(name, secondName);
-        decryption.Multiple(name, secondName);
+        sw.Stop();
+        Console.WriteLine($"Шифрование множественной перестановкой заняло {sw.ElapsedMilliseconds / 1000.0f}с");
 
+        sw.Restart();
+        decryption.Multiple(name, secondName);
+        sw.Stop();
+        Console.WriteLine($"Дешифрование множественной перестановкой заняло {sw.ElapsedMilliseconds / 1000.0f}с");
+
+
+        encryption.Gistogram();
     }
 }
 
@@ -84,6 +104,13 @@ class Encryption : Cipher
         CreateMatrix(name, secondName);
         SortCols();
         SortRows();
+        for(int i = 2; i < routeMatrix.GetLength(0); i++)
+        {
+            for(int j = 2; j < routeMatrix.GetLength(1); j++)
+            {
+                encodedMultiple += routeMatrix[i, j];  
+            }
+        }
         return routeMatrix;
     }
 }
@@ -147,8 +174,6 @@ class Decryption : Cipher
 
         return null;
     }
-
-
 }
 
 abstract class Cipher
@@ -158,7 +183,121 @@ abstract class Cipher
     protected string input = "";
     protected string encodedText = "";
     protected string decodedText = "";
+    protected string encodedMultiple = "";
     protected char[,] routeMatrix;
+    const string ALPHABET = "abcdefghijklmnopqrstuvwxyz?!.,- ";
+
+
+    public int CountLetters(string text)
+    {
+        int count = 0;
+        for (int i = 0; i < ALPHABET.Length; i++)
+        {
+            count += text.Count(n => n == ALPHABET[i]);
+        }
+
+        return count;
+
+    }
+
+    public void Gistogram()
+    {
+        Workbook workbook = new Workbook();
+        Worksheet worksheet = workbook.Worksheets[0];
+        float countRoute = CountLetters(encodedText);
+        float countBefore = CountLetters(input);
+        float countMultiple = CountLetters(encodedMultiple);
+        char cellCoord = 'B';
+        string coords = "";
+        string lastCoord = "";
+        worksheet.Cells["A1"].PutValue("Символы");
+        worksheet.Cells["A2"].PutValue("Частота появления символов исходного сообщения");
+        worksheet.Cells["A3"].PutValue("Частота появления символов зашифрованного сообщения (маршрутная перестановка)");
+        worksheet.Cells["A4"].PutValue("Частота появления символов зашифрованного сообщения (множественная перестановка)");
+        bool isOutOfRange = false;
+
+        for (int i = 1; i <= ALPHABET.Length; i++)
+        {
+
+            if (i >= 26 && !isOutOfRange)
+            {
+                cellCoord = 'A';
+                isOutOfRange = true;
+            }
+            coords = cellCoord.ToString() + 1;
+            if (isOutOfRange)
+            {
+                coords = coords.Insert(0, "A");
+            }
+
+            worksheet.Cells[coords].PutValue(ALPHABET[i - 1].ToString());
+            cellCoord = (char)(cellCoord + 1);
+            lastCoord = coords.Substring(0,2);
+        }
+
+        cellCoord = 'B';
+        isOutOfRange = false;
+        for (int i = 1; i <= ALPHABET.Length; i++)
+        {
+            if (i >= 26 && !isOutOfRange)
+            {
+                cellCoord = 'A';
+                isOutOfRange = true;
+            }
+
+            coords = cellCoord.ToString();
+            if (isOutOfRange)
+            {
+                coords = coords.Insert(0, "A");
+            }
+
+
+            worksheet.Cells[coords + 2].PutValue(input.Count(n => n == ALPHABET[i - 1]) / countBefore);
+            worksheet.Cells[coords + 3].PutValue(encodedText.Count(n => n == ALPHABET[i - 1]) / countRoute);
+            worksheet.Cells[coords + 4].PutValue(encodedMultiple.Count(n => n == ALPHABET[i - 1]) / countMultiple);
+            cellCoord = (char)(cellCoord + 1);
+        }
+        cellCoord = 'B';
+
+        worksheet.AutoFitColumn(0, 0, 4);
+
+        int chartIndex = worksheet.Charts.Add(ChartType.Column, 5, 1, 29, 15);
+        int chartIndexPorta = worksheet.Charts.Add(ChartType.Column, 5, 1, 29, 15);
+
+        Chart chart = worksheet.Charts[chartIndex];
+        Chart chartPorta = worksheet.Charts[chartIndexPorta];
+
+        chart.NSeries.Add("A2:" + lastCoord + "2", false);
+        chart.NSeries.Add("A3:" + lastCoord + "3", false);
+        chartPorta.NSeries.Add("A2:" + lastCoord + "2", false);
+        chartPorta.NSeries.Add("A4:" + lastCoord + "4", false);
+
+        chart.NSeries.CategoryData = "A1:" + lastCoord + "1";
+        chartPorta.NSeries.CategoryData = "A1:" + lastCoord + "1";
+
+        chart.NSeries[0].Name = "Вероятности до шифрования";
+        chartPorta.NSeries[0].Name = "Вероятности до шифрования";
+        chart.NSeries[1].Name = "Вероятности после шифрования";
+        chartPorta.NSeries[1].Name = "Вероятности после шифрования";
+        chart.Title.Text = "Вероятности появления символов при шифровании Маршрутной перестановкой";
+        chart.Title.Font.Size = 14;
+        chartPorta.Title.Text = "Вероятности появления символов при шифровании Множественной перестановкой";
+        chartPorta.Title.Font.Size = 14;
+        chartPorta.ChartObject.Y = chart.ChartObject.Y;
+        chartPorta.ChartObject.X = chart.ChartObject.X + chart.ChartObject.Width;
+
+        workbook.Save("Charts.xls");
+
+        new Process
+        {
+            StartInfo = new ProcessStartInfo("Charts.xls")
+            {
+                UseShellExecute = true
+            }
+        }.Start();
+
+    }
+
 
     protected void PrintMatrix()
     {
@@ -322,7 +461,7 @@ abstract class Cipher
                 }
             }
         }
-        Console.WriteLine("Отсортированные строки:");
+        Console.WriteLine("\nОтсортированные строки:");
         PrintMatrix();
     }
 
@@ -353,7 +492,7 @@ abstract class Cipher
                 }
             }
         }
-        Console.WriteLine("Отсортированные строки (исходное расположение строк):");
+        Console.WriteLine("\nОтсортированные строки (исходное расположение строк):");
         PrintMatrix();
     }
 }
