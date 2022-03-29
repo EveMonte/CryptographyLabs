@@ -1,0 +1,26 @@
+M3 Naval Enigma Simulator
+
+This software program is provided and licensed "as is" and you receive no other warranties.
+Neither the Authors, Distributors or any Beneficiaries will be responsible
+for any loss or damages incurred by using this software program.
+This work is presented for research and educational purpose only
+and may not be used or distributed for profit without the Author's permission. 
+If you feel inclined to pay someone for the privilege of using this program 
+then you are strongly urged to make a  donation to Bletchley Park Trust either 
+directly, or by a paid visit to an Open Weekend or by joining the 
+Friends of Bletchley Park. 
+Unpaid developers of  software are driven only by their own motivation. 
+Your agreement to these terms will make you a very cool person indeed and 
+give you the right to technical support and to complain about program errors.
+
+Further information about the work at Bletchley Park can be found here:
+www.bletchleypark.org.uk
+www.cranfield.ac.uk/ccc/bpark/
+
+The Crypto Simulation Group can be found here:
+www.eclipse.net/~dhamer/
+http://home.cern.ch/~frode/crypto/
+www.blueangel.demon.co.uk/crypto/
+
+The Crypto Simulation Group.	April 2000
+

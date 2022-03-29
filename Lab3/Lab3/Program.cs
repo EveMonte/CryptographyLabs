@@ -97,7 +97,7 @@ class Encryption : Cipher
 
     public override char[,] Multiple(string name, string secondName)
     {
-        using(StreamReader sr = new StreamReader("input.txt"))
+        using(StreamReader sr = new StreamReader("input2.txt"))
         {
             input = sr.ReadToEnd();
         }
@@ -110,6 +110,10 @@ class Encryption : Cipher
             {
                 encodedMultiple += routeMatrix[i, j];  
             }
+        }
+        using(StreamWriter sw = new StreamWriter("encodedMultiple.txt"))
+        {
+            sw.WriteLine(encodedMultiple);
         }
         return routeMatrix;
     }
