@@ -257,6 +257,10 @@ class Decryption : Base
         int c, d, nod;
         nod = Euclid.Gcd(a, 26, out c, out d);
         float reciprocal = c / nod;
+        if(reciprocal < 0)
+        {
+            reciprocal += 26;
+        }
         using (StreamReader sr = new StreamReader("outputCaesarEnryption.txt"))
         {
             textCaesar = sr.ReadToEnd().ToLower();
@@ -335,7 +339,7 @@ abstract class Base
 
 
     protected static int a = 3;
-    protected static int b = 7;
+    protected static int b = 5;
     abstract public void Caesar();
     abstract public void Porta();
 }
