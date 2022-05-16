@@ -1,0 +1,30 @@
+D:\University\6th Sem\Крипта\Laba8\Laba8\bin\Debug\net6.0\Laba8.exe
+D:\University\6th Sem\Крипта\Laba8\Laba8\bin\Debug\net6.0\Laba8.deps.json
+D:\University\6th Sem\Крипта\Laba8\Laba8\bin\Debug\net6.0\Laba8.runtimeconfig.json
+D:\University\6th Sem\Крипта\Laba8\Laba8\bin\Debug\net6.0\Laba8.dll
+D:\University\6th Sem\Крипта\Laba8\Laba8\bin\Debug\net6.0\ref\Laba8.dll
+D:\University\6th Sem\Крипта\Laba8\Laba8\bin\Debug\net6.0\Laba8.pdb
+D:\University\6th Sem\Крипта\Laba8\Laba8\obj\Debug\net6.0\Laba8.csproj.AssemblyReference.cache
+D:\University\6th Sem\Крипта\Laba8\Laba8\obj\Debug\net6.0\Laba8.GeneratedMSBuildEditorConfig.editorconfig
+D:\University\6th Sem\Крипта\Laba8\Laba8\obj\Debug\net6.0\Laba8.AssemblyInfoInputs.cache
+D:\University\6th Sem\Крипта\Laba8\Laba8\obj\Debug\net6.0\Laba8.AssemblyInfo.cs
+D:\University\6th Sem\Крипта\Laba8\Laba8\obj\Debug\net6.0\Laba8.csproj.CoreCompileInputs.cache
+D:\University\6th Sem\Крипта\Laba8\Laba8\obj\Debug\net6.0\Laba8.dll
+D:\University\6th Sem\Крипта\Laba8\Laba8\obj\Debug\net6.0\ref\Laba8.dll
+D:\University\6th Sem\Крипта\Laba8\Laba8\obj\Debug\net6.0\Laba8.pdb
+D:\University\6th Sem\Крипта\Laba8\Laba8\obj\Debug\net6.0\Laba8.genruntimeconfig.cache
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\bin\Debug\net6.0\Laba8.exe
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\bin\Debug\net6.0\Laba8.deps.json
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\bin\Debug\net6.0\Laba8.runtimeconfig.json
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\bin\Debug\net6.0\Laba8.dll
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\bin\Debug\net6.0\ref\Laba8.dll
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\bin\Debug\net6.0\Laba8.pdb
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\obj\Debug\net6.0\Laba8.csproj.AssemblyReference.cache
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\obj\Debug\net6.0\Laba8.GeneratedMSBuildEditorConfig.editorconfig
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\obj\Debug\net6.0\Laba8.AssemblyInfoInputs.cache
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\obj\Debug\net6.0\Laba8.AssemblyInfo.cs
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\obj\Debug\net6.0\Laba8.csproj.CoreCompileInputs.cache
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\obj\Debug\net6.0\Laba8.dll
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\obj\Debug\net6.0\ref\Laba8.dll
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\obj\Debug\net6.0\Laba8.pdb
+d:\University\6th Sem\Крипта\Laba8(doesn't work)\Laba8\obj\Debug\net6.0\Laba8.genruntimeconfig.cache

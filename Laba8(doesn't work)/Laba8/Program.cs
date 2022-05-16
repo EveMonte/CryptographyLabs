@@ -5,6 +5,7 @@ class Program
 {
     public static void Main(string[] args)
     {
+        Console.WriteLine(Helper.Reminder(97059229, 3930892538, 7861785077));
         RSA rsa = new RSA();
         rsa.Encrypt();
         rsa.Decrypt();

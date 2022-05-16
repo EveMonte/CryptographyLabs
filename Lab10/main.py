@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import sympy as sp
+import MD5 as hash
 from math import gcd as bltin_gcd
 
 class helper:
@@ -29,15 +30,28 @@ class helper:
 
 
 class ElGamal:
+
     def __init__(self):
-        self.generateData()
-    def generateData(self):
-        self.p = int(random.random() * 10 ** 16 // 10**12)
+        self.generate_data()
+
+    def generate_data(self):
+        self.p = random.randint(4096, 8191)
         while not sp.isprime(self.p):
-            self.p = int(random.random() * 10 ** 16 // 10 ** 12)
+            self.p = random.randint(4096, 8191)
         self.g = helper().primitive_root(self.p)
-        self.x = random.randint(2, self.p - 1)
-        self.y = int(pow(self.g, self.x, self.p))
+        x, y, a = helper().bezout(self.g, self.p)
+        if x < 0:
+            x += self.p
+        gcd = a == 1
+        while not gcd:
+            self.g = helper().primitive_root(self.p)
+            x, y, a = helper().bezout(self.g, self.p)
+            if x < 0:
+                x += self.p
+            gcd = a == 1
+
+        self.x = random.randint(2, self.p - 2)
+        self.y = pow(self.g, self.x, self.p)
         print('p: ' + str(self.p) + ' g ' + str(self.g) + ' x: ' + str(self.x) + ' y: ' + str(self.y))
         return self.p, self.g, self.x, self.y
 
@@ -75,8 +89,85 @@ class ElGamal:
         print('decr ' + str(decrypted))
         return decrypted
 
-    #def digital_signature(self):
+    def digital_signature(self, text):
+        self.b = 0
+        self.a = 0
+        while self.b == 0:
+            k = random.randint(2, self.p - 2)
+            x, y, a = helper().bezout(k, self.p - 1)
+            if x < 0:
+                x += self.p
+            gcd = a == 1
+            while not gcd:
+                k = random.randint(1, self.p - 2)
+                x, y, a = helper().bezout(k, self.p - 1)
+                if x < 0:
+                    x += self.p
+                gcd = a == 1
+            hash_func = hash.MD5()
+            H = int(hash_func.hash(text)[0:5], 16)
+            self.a = pow(self.g, k, self.p)
+            self.b = (H - self.x * self.a) * x % (self.p - 1)
+        print('Digital signature: ({}, {})'.format(self.a, self.b))
 
+    def check_digital_signature(self, text):
+        hash_func = hash.MD5()
+        H = int(hash_func.hash(text)[0:5], 16)
+        modulus = pow(self.g, H, self.p)
+        if modulus == pow(self.y, self.a, self.p) * pow(self.a, self.b, self.p) % self.p:
+            print("Success")
+        else:
+            print('Failed')
+
+
+class Shnorr:
+
+    def __init__(self):
+        self.generate_data()
+
+    def generate_data(self):
+        self.p = int(random.random() * 10 ** 16 // 10**8)
+        while not sp.isprime(self.p):
+            self.p = int(random.random() * 10 ** 16 // 10 ** 8)
+        self.q = (self.p - 1) // 2
+        for c in range((self.p - 1) // 2, 2):
+            if sp.isprime(c) and (self.p - 1) / c == 0:
+                self.q = c
+                break
+        modulus = 0
+        self.g = 0
+        while modulus != 1:
+            self.g = int(random.random() * 10 ** 16 // 10 ** 8)
+            modulus = pow(self.g, self.q, self.p)
+        self.w = random.randint(1, self.q)
+        self.y = pow(self.g, self.q - self.w, self.p)
+        print('Public key (p, g, q, y): ({0}, {1}, {2}, {3})'.format(self.p, self.g, self.q, self.y));
+        print('Private key w: ' + str(self.w))
+
+    def digital_signature(self):
+        self.b = 0
+        self.a = 0
+        k = random.randint(2, self.q)
+        # x, y, a = helper().bezout(k, self.p - 1)
+        # if x < 0:
+        #     x += self.p
+        # gcd = a == 1
+        # while not gcd:
+        #     k = random.randint(1, self.q)
+        #     x, y, a = helper().bezout(k, self.p - 1)
+        #     if x < 0:
+        #         x += self.p
+        #     gcd = a == 1
+        print('k:' + str(k))
+        self.a = pow(self.g, k, self.p)
+        self.e = random.randint(0, 2 ** 16 - 1)
+        self.s = (k + self.w * self.e) % self.q
+        if self.s == pow(self.g, self.s, self.p) * pow(self.y, self.e, self.p) % self.p:
+            print('Success')
+        else:
+            print('Failure')
+            # self.b = (H - self.x * self.a) * x % (self.p - 1)
+        #print('Digital signature: ({}, {})'.format(self.a, self.b))
 
 
 class RSA:
@@ -87,8 +178,9 @@ class RSA:
     e = []
     d = []
     def __init__(self):
-        print('Sender\'s data:')
+        print('\nSender\'s data:')
         self.generate_data()
+
     def generate_data(self):
         p = int(random.random() * 10 ** 16 // 10**8)
         while not sp.isprime(p):
@@ -138,7 +230,7 @@ class RSA:
         return decrypted
 
     def digital_signature(self, text):
-        print('Recipient\'s data:')
+        print('\nRecipient\'s data:')
         self.generate_data()
         verified_message = self.encrypt(text, False)
         encoded_verified_message = self.encrypt(verified_message, True)
@@ -150,13 +242,21 @@ class RSA:
 
 
 if __name__ == '__main__':
-    rsa = RSA()
     text = str(input())
-    # encrypted = rsa.encrypt(text, False)
-    # decrypted = rsa.decrypt(encrypted, False)
+
     el = ElGamal()
     enc = el.encrypt(text)
     decr = el.decrypt(enc)
+    el.digital_signature(text)
+    el.check_digital_signature(text)
+
+    shnorr = Shnorr()
+    shnorr.digital_signature()
+
+    rsa = RSA()
+    encrypted = rsa.encrypt(text, False)
+    decrypted = rsa.decrypt(encrypted, False)
     rsa.digital_signature(text)
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

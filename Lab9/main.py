@@ -23,6 +23,7 @@ class MD5:
         self.s[48:64] = [6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21]
 
     def first_step(self, text):
+        self.text = text
         for c in text:
             self.tempText += str(bin(ord(c))).removeprefix('0b')
         self.tempText += '1'
@@ -32,7 +33,7 @@ class MD5:
         print(self.tempText)
 
     def second_step(self):
-        bin_length = bin(len(self.tempText)).removeprefix('0b')
+        bin_length = bin(len(self.text)*8).removeprefix('0b')
         if 64 - len(bin_length) > 0:
             bin_length = (64 - len(bin_length)) * '0' + bin_length
         self.tempText += bin_length[-33:-1] + bin_length[-64:-32]
@@ -44,7 +45,7 @@ class MD5:
         print(chunks)
         for c in chunks:
             word32 = [c[x: x + 32] for x in range(0, len(c), 32)]
-            print (word32)
+            print(word32)
             A = self.a0
             B = self.b0
             C = self.c0
